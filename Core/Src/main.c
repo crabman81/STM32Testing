@@ -21,6 +21,8 @@
 #include "main.h"
 
 uint8_t UART2_rxBuffer[12] = {0};
+uint8_t UART2_commandBuffer[200] = {0};
+int counter = 0;
 
 UART_HandleTypeDef huart2;
 
@@ -95,7 +97,7 @@ int main(void)
   MX_USB_OTG_FS_PCD_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-  HAL_UART_Receive_IT (&huart2, UART2_rxBuffer, 12);
+  HAL_UART_Receive_IT (&huart2, UART2_rxBuffer, 1);
 
 
   /* USER CODE END 2 */
@@ -114,8 +116,13 @@ int main(void)
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-    HAL_UART_Transmit(&huart2, UART2_rxBuffer, 12, 100);
-    HAL_UART_Receive_IT(&huart2, UART2_rxBuffer, 12);
+    HAL_UART_Transmit(&huart2, UART2_rxBuffer, 1, 100);
+    HAL_UART_Receive_IT(&huart2, UART2_rxBuffer, 1);
+    UART2_commandBuffer[counter] = UART2_rxBuffer[0];
+    counter++;
+    if (UART2_rxBuffer[0] == 13){
+    	HAL_UART_Transmit(&huart2, UART2_commandBuffer, 200, 200);
+    }
 }
 
 /**
