@@ -121,9 +121,21 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     UART2_commandBuffer[counter] = UART2_rxBuffer[0];
     counter++;
     if (UART2_rxBuffer[0] == 13){
+    	NewLineCR();
     	HAL_UART_Transmit(&huart2, UART2_commandBuffer, 200, 200);
+    	NewLineCR();
+    	memset(UART2_commandBuffer, 0, sizeof(UART2_commandBuffer));
+    	counter=0;
+    	SetLEDs();
     }
+
 }
+
+void NewLineCR(){
+	HAL_UART_Transmit(&huart2, "\r\n", 2, 100);
+}
+
+
 
 /**
   * @brief System Clock Configuration
